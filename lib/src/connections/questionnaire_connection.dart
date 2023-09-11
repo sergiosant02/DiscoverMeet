@@ -1,6 +1,9 @@
 import 'dart:developer' as dev;
 
 import 'package:discover_meet/main.dart';
+import 'package:discover_meet/src/models/QuestionType.dart';
+import 'package:discover_meet/src/models/question_model.dart';
+import 'package:discover_meet/src/models/questionnaire_model.dart';
 import 'package:discover_meet/src/models/room_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -8,11 +11,14 @@ import 'package:http/http.dart' as http;
 import '../utils/constantes_globales.dart';
 
 class QuestionnaireConnection {
-  String endPointServer = ConstantesGlobales.urlServidorPruebas;
+  String endPointServer = ConstantesGlobales.urlCurrentServidor;
 
-  Future<List<RoomModel>> getJoinedRooms() async {
+  Future<List<QuestionnaireModel>> getQuestionnairesOfRoom(
+      String roomId) async {
     try {
-      Uri uri = Uri.http(endPointServer, 'api/room/joinedRooms');
+      Uri uri = Uri.http(
+          endPointServer, 'api/room/questionnaires', {'roomId': roomId});
+      dev.log(uri.toString());
       final response = await http.get(
         uri,
         headers: {
@@ -21,7 +27,9 @@ class QuestionnaireConnection {
           'Authorization': pref.token,
         },
       );
+
       String cadena = response.body;
+      dev.log(cadena);
       if (cadena[0] != '[') {
         cadena = '[$cadena';
       }
@@ -30,14 +38,15 @@ class QuestionnaireConnection {
       }
       dynamic jsonResponse = jsonDecode(cadena);
 
-      List<RoomModel> roomModelList = [];
+      List<QuestionnaireModel> questionnireModelList = [];
 
       if (jsonResponse is List) {
         for (var val in jsonResponse) {
           try {
             String json = jsonEncode(val);
-            RoomModel room = RoomModel.fromRawJson(json);
-            roomModelList.add(room);
+            QuestionnaireModel questionnaire =
+                QuestionnaireModel.fromRawJson(json);
+            questionnireModelList.add(questionnaire);
           } catch (e) {
             dev.log("Error:");
             dev.log(e.toString());
@@ -46,11 +55,12 @@ class QuestionnaireConnection {
 
         // Aquí puedes usar la lista roomModelList como desees
       } else {
-        RoomModel room = RoomModel.fromJson(jsonResponse);
-        roomModelList.add(room);
+        QuestionnaireModel questionnaire =
+            QuestionnaireModel.fromJson(jsonResponse);
+        questionnireModelList.add(questionnaire);
       }
 
-      return roomModelList;
+      return questionnireModelList;
     } catch (e) {
       dev.log(e.toString());
       rethrow;

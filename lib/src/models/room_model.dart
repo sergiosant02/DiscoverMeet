@@ -1,53 +1,61 @@
-import 'dart:convert';
-
+import 'package:discover_meet/src/models/json_convert_interface.dart';
 import 'package:discover_meet/src/models/user_model.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'dart:convert';
+import 'dart:developer' as dev;
 
-class RoomModel {
+import '../utils/utils.dart';
+
+part 'room_model.g.dart';
+
+@JsonSerializable()
+class RoomModel implements JsonConvertInterface {
+  @JsonKey(name: "_id")
   String id;
+  @JsonKey(name: "title")
   String title;
+  @JsonKey(name: "participants")
   List<UserModel> participants;
-  DateTime createdAt;
-  DateTime updateAt;
+  @JsonKey(name: "owner")
   UserModel owner;
+  @JsonKey(name: "code")
   String code;
+  @JsonKey(name: "createdAt")
+  DateTime createdAt;
+  @JsonKey(name: "updatedAt")
+  DateTime updatedAt;
+  @JsonKey(name: "__v")
   int v;
 
   RoomModel({
     required this.id,
     required this.title,
     required this.participants,
-    required this.createdAt,
-    required this.updateAt,
     required this.owner,
     required this.code,
+    required this.createdAt,
+    required this.updatedAt,
     required this.v,
   });
 
-  factory RoomModel.fromRawJson(String str) =>
-      RoomModel.fromJson(json.decode(str));
+  factory RoomModel.fromJson(Map<String, dynamic> json) =>
+      _$RoomModelFromJson(json);
 
-  String toRawJson() => json.encode(toJson());
+  Map<String, dynamic> toJson() => _$RoomModelToJson(this);
 
-  factory RoomModel.fromJson(Map<String, dynamic> json) => RoomModel(
-        id: json["_id"],
-        title: json["title"],
-        participants: List<UserModel>.from(
-            json["participants"].map((x) => UserModel.fromJson(x))),
-        createdAt: DateTime.parse(json["createdAt"]),
-        updateAt: DateTime.parse(json["updateAt"]),
-        owner: UserModel.fromJson(json["owner"]),
-        code: json["code"],
-        v: json["__v"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "title": title,
-        "participants": List<dynamic>.from(participants.map((x) => x.toJson())),
-        "createdAt": createdAt.toIso8601String(),
-        "updateAt": updateAt.toIso8601String(),
-        "owner": owner.toJson(),
-        "code": code,
-        "__v": v,
-      };
+  static List<RoomModel> fromJsonList(String body) {
+    body = Utils.formatJson(body);
+    List<RoomModel> res = [];
+    dynamic decodedData = json.decode(body);
+    try {
+      for (var map in decodedData) {
+        Map<String, dynamic> info = map;
+        RoomModel room = RoomModel.fromJson(info);
+        res.add(room);
+      }
+    } catch (e) {
+      dev.log(e.toString());
+    }
+    return res;
+  }
 }

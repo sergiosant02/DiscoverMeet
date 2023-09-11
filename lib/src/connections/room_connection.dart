@@ -1,77 +1,117 @@
+import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:discover_meet/main.dart';
+import 'package:discover_meet/src/exceptions/jwt_expired_exception.dart';
 import 'package:discover_meet/src/models/questionnaire_model.dart';
 import 'package:discover_meet/src/models/room_model.dart';
+import 'package:discover_meet/src/models/user_model.dart';
+import 'package:discover_meet/src/utils/utils.dart';
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
+import '../providers/page_provider.dart';
 import '../utils/constantes_globales.dart';
 
 class RoomConnection {
-  String endPointServer = ConstantesGlobales.urlServidorPruebas;
+  String endPointServer = ConstantesGlobales.urlCurrentServidor;
 
   Future<List<RoomModel>> getJoinedRooms() async {
-    try {
-      Uri uri = Uri.http(endPointServer, 'api/room/joinedRooms');
-      final response = await http.get(
-        uri,
-        headers: {
-          'Cookie': pref.token,
-          'set-cookie': pref.token,
-          'Authorization': pref.token,
-        },
-      );
-      String cadena = response.body;
-      if (cadena[0] != '[') {
-        cadena = '[$cadena';
-      }
-      if (!cadena.endsWith(']')) {
-        cadena = '$cadena]';
-      }
-      dynamic jsonResponse = jsonDecode(cadena);
+    Uri uri = Uri.http(endPointServer, 'api/room/joinedRooms');
+    final response = await http.get(
+      uri,
+      headers: {
+        'Cookie': pref.token,
+        'set-cookie': pref.token,
+        'Authorization': pref.token,
+      },
+    );
 
-      List<RoomModel> roomModelList = [];
-
-      if (jsonResponse is List) {
-        for (var val in jsonResponse) {
-          try {
-            String json = jsonEncode(val);
-            RoomModel room = RoomModel.fromRawJson(json);
-            roomModelList.add(room);
-          } catch (e) {
-            dev.log("Error:");
-            dev.log(e.toString());
-          }
-        }
-
-        // Aquí puedes usar la lista roomModelList como desees
-      } else {
-        RoomModel room = RoomModel.fromJson(jsonResponse);
-        roomModelList.add(room);
-      }
-
-      return roomModelList;
-    } catch (e) {
-      dev.log(e.toString());
-      rethrow;
+    List<RoomModel> roomModelList = RoomModel.fromJsonList(response.body);
+    if (response.statusCode == 401) {
+      validToken = false;
+    } else {
+      validToken = true;
     }
+    return roomModelList;
   }
 
-  Future<List<QuestionnaireModel>?> getQuestionnairesList(String roomId) async {
-    try {
-      Uri uri = Uri.http(endPointServer, 'api/room/questionnaires');
-      final response = await http.get(
-        uri,
-        headers: {
-          'Cookie': pref.token,
-          'set-cookie': pref.token,
-          'Authorization': pref.token,
-        },
-      );
-      return null;
-    } catch (e) {
-      dev.log(e.toString());
+  Future<bool> joinToRoom(String code) async {
+    Uri uri =
+        Uri.http(endPointServer, 'api/room/addParticipant', {'roomCode': code});
+    bool res = true;
+    final response = await http.post(
+      uri,
+      headers: {
+        'Cookie': pref.token,
+        'set-cookie': pref.token,
+        'Authorization': pref.token,
+      },
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      res = true;
+    } else {
+      res = false;
     }
+    return res;
+  }
+
+  Future<List<RoomModel>> getMyRooms() async {
+    Uri uri = Uri.http(endPointServer, 'api/room/myRooms');
+    final response = await http.get(
+      uri,
+      headers: {
+        'Cookie': pref.token,
+        'set-cookie': pref.token,
+        'Authorization': pref.token,
+      },
+    );
+
+    List<RoomModel> roomModelList = RoomModel.fromJsonList(response.body);
+    if (response.statusCode == 401) {
+      validToken = false;
+    } else {
+      validToken = true;
+    }
+    return roomModelList;
+  }
+
+  Future<bool> changeTitle(String roomId, String title) async {
+    Uri uri =
+        Uri.http(endPointServer, 'api/room/changeTitle', {'roomId': roomId});
+    bool res = true;
+    final response = await http.put(uri, headers: {
+      'Cookie': pref.token,
+      'set-cookie': pref.token,
+      'Authorization': pref.token,
+    }, body: {
+      "title": title
+    });
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      res = true;
+    } else {
+      dev.log(response.body);
+      res = false;
+    }
+    return res;
+  }
+
+  Future<List<UserModel>> getListParticipants(String roomId) async {
+    Uri uri =
+        Uri.http(endPointServer, 'api/room/participants', {'roomId': roomId});
+    List<UserModel> userModelList = [];
+    final response = await http.get(
+      uri,
+      headers: {
+        'Cookie': pref.token,
+        'set-cookie': pref.token,
+        'Authorization': pref.token,
+      },
+    );
+    userModelList = UserModel.fromJsonList(response.body);
+    dev.log(response.body);
+    return userModelList;
   }
 }

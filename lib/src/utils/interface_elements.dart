@@ -16,13 +16,27 @@ class InterfaceElements {
         )),
     const BottomNavigationBarItem(
         icon: Icon(
+          Icons.screen_search_desktop_sharp,
+        ),
+        label: 'Mis salas',
+        activeIcon: Icon(
+          Icons.screen_search_desktop_sharp,
+          color: Color.fromRGBO(63, 35, 5, 1),
+        )),
+    const BottomNavigationBarItem(
+        icon: Icon(
           Icons.person_pin,
         ),
         activeIcon: Icon(Icons.person_pin, color: Color.fromRGBO(63, 35, 5, 1)),
         label: 'Usuario')
   ];
-  static Icon searchIcon = const Icon(
+  static Icon searchIconWhite = const Icon(
     Icons.search,
     color: Colors.white,
+  );
+
+  static Icon searchIconBlack = const Icon(
+    Icons.search,
+    color: Colors.black,
   );
 }

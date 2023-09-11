@@ -1,11 +1,19 @@
 // To parse this JSON data, do
 //
 //     final user = userFromJson(jsonString);
+import 'dart:developer' as dev;
 
 import 'dart:convert';
 
-class UserModel {
-  String id;
+import 'package:discover_meet/src/models/blood_types_enum.dart';
+import 'package:discover_meet/src/models/file_model.dart';
+import 'package:discover_meet/src/models/genre_enum.dart';
+import 'package:discover_meet/src/models/json_convert_interface.dart';
+import 'package:discover_meet/src/utils/utils.dart';
+import 'package:get/utils.dart';
+
+class UserModel implements JsonConvertInterface {
+  String? id;
   String plan;
   String firstName;
   String lastName;
@@ -13,13 +21,15 @@ class UserModel {
   String password;
   String phone;
   String role;
-  String genre;
-  String blood;
-  DateTime createdAt;
-  DateTime updateAt;
+  Genre genre;
+  BloodType blood;
+  DateTime birthDate;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  FileModel? picture;
 
   UserModel({
-    required this.id,
+    this.id,
     required this.plan,
     required this.firstName,
     required this.lastName,
@@ -29,9 +39,25 @@ class UserModel {
     required this.role,
     required this.genre,
     required this.blood,
-    required this.createdAt,
-    required this.updateAt,
+    required this.birthDate,
+    this.createdAt,
+    this.updatedAt,
+    this.picture,
   });
+
+  static UserModel createEmptyUser() {
+    return UserModel(
+        plan: "free",
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        phone: "",
+        role: "user",
+        genre: Genre.MALE,
+        blood: BloodType.AP,
+        birthDate: DateTime.now());
+  }
 
   factory UserModel.fromRawJson(String str) =>
       UserModel.fromJson(json.decode(str));
@@ -39,7 +65,6 @@ class UserModel {
   String toRawJson() => json.encode(toJson());
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        plan: json["plan"],
         id: json["_id"],
         firstName: json["firstName"],
         lastName: json["lastName"],
@@ -47,10 +72,19 @@ class UserModel {
         password: json["password"],
         phone: json["phone"],
         role: json["role"],
-        genre: json["genre"],
-        blood: json["blood"],
+        plan: json["plan"],
+        genre: Genre.fromString(json["genre"]),
+        blood: json["blood"] != null
+            ? BloodType.fromString(json["blood"])
+            : BloodType.OL,
+        birthDate: DateTime.parse(json["birthDate"]),
         createdAt: DateTime.parse(json["createdAt"]),
-        updateAt: DateTime.parse(json["updateAt"]),
+        updatedAt: json["updatedAt"] != null
+            ? DateTime.parse(json["updatedAt"])
+            : null,
+        picture: (json["picture"] != null && json["picture"] != "")
+            ? FileModel.fromJson(json["picture"])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -62,9 +96,27 @@ class UserModel {
         "password": password,
         "phone": phone,
         "role": role,
-        "genre": genre,
-        "blood": blood,
-        "createdAt": createdAt.toIso8601String(),
-        "updateAt": updateAt.toIso8601String(),
+        "genre": Genre.getString(genre),
+        "blood": blood.toString(),
+        "birthDate": birthDate.toIso8601String(),
+        "createdAt": createdAt != null ? createdAt!.toIso8601String() : null,
+        "updateAt": updatedAt != null ? updatedAt!.toIso8601String() : null,
+        "picture": picture != null ? picture!.toJson() : null
       };
+
+  static List<UserModel> fromJsonList(String body) {
+    body = Utils.formatJson(body);
+    List<UserModel> res = [];
+    dynamic decodedData = json.decode(body);
+    try {
+      for (var map in decodedData) {
+        Map<String, dynamic> info = map;
+        UserModel user = UserModel.fromJson(info);
+        res.add(user);
+      }
+    } catch (e) {
+      dev.log("Error: " + e.toString());
+    }
+    return res;
+  }
 }

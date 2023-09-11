@@ -1,0 +1,316 @@
+@startuml
+set namespaceSeparator ::
+
+class "discover_meet::main.dart::MyApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "discover_meet::main.dart::MyApp"
+
+class "discover_meet::src::sharedPreferences::shared_preferences.dart::UserPreferences" {
+  {static} -UserPreferences _singleton
+  -SharedPreferences _prefs
+  +String email
+  +String password
+  +String token
+  +dynamic initPrefs()
+}
+
+"discover_meet::src::sharedPreferences::shared_preferences.dart::UserPreferences" o-- "discover_meet::src::sharedPreferences::shared_preferences.dart::UserPreferences"
+"discover_meet::src::sharedPreferences::shared_preferences.dart::UserPreferences" o-- "shared_preferences::shared_preferences.dart::SharedPreferences"
+
+class "discover_meet::src::providers::page_provider.dart::PageProvider" {
+  -int _page
+  +int page
+}
+
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "discover_meet::src::providers::page_provider.dart::PageProvider"
+
+class "discover_meet::src::utils::interface_elements.dart::InterfaceElements" {
+  {static} +Color principalColor
+  {static} +Color backColor
+  {static} +List<BottomNavigationBarItem> itemNavigation
+  {static} +Icon searchIconWhite
+  {static} +Icon searchIconBlack
+}
+
+"discover_meet::src::utils::interface_elements.dart::InterfaceElements" o-- "dart::ui::Color"
+"discover_meet::src::utils::interface_elements.dart::InterfaceElements" o-- "flutter::src::widgets::icon.dart::Icon"
+
+class "discover_meet::src::utils::utils.dart::Utils" {
+  {static} +void check()
+  {static} +String formatJson()
+}
+
+class "discover_meet::src::utils::interface_colors.dart::InterfaceColors" {
+  {static} +Color principalColor
+  {static} +Color backgroundColor
+  {static} +Color menuColor
+}
+
+"discover_meet::src::utils::interface_colors.dart::InterfaceColors" o-- "dart::ui::Color"
+
+class "discover_meet::src::utils::constantes_globales.dart::ConstantesGlobales" {
+  {static} +String urlServidorPruebas
+  {static} +String urlServidor
+}
+
+class "discover_meet::src::models::answer_model.dart::AnswerModel" {
+  +String id
+  +List<String> value
+  +DateTime createdAt
+  +DateTime updateAt
+  +QuestionModel question
+  +UserModel user
+  +String toRawJson()
+  +Map<String, dynamic> toJson()
+}
+
+"discover_meet::src::models::answer_model.dart::AnswerModel" o-- "discover_meet::src::models::question_model.dart::QuestionModel"
+"discover_meet::src::models::answer_model.dart::AnswerModel" o-- "discover_meet::src::models::user_model.dart::UserModel"
+
+class "discover_meet::src::models::room_model.dart::RoomModel" {
+  +String id
+  +String title
+  +List<UserModel> participants
+  +DateTime createdAt
+  +DateTime updateAt
+  +UserModel owner
+  +String code
+  +int v
+  +String toRawJson()
+  +Map<String, dynamic> toJson()
+  {static} +List<RoomModel> leerJsonListRoom()
+}
+
+"discover_meet::src::models::room_model.dart::RoomModel" o-- "discover_meet::src::models::user_model.dart::UserModel"
+
+class "discover_meet::src::models::user_model.dart::UserModel" {
+  +String id
+  +String plan
+  +String firstName
+  +String lastName
+  +String email
+  +String password
+  +String phone
+  +String role
+  +String genre
+  +String blood
+  +DateTime createdAt
+  +DateTime updateAt
+  +String toRawJson()
+  +Map<String, dynamic> toJson()
+}
+
+class "discover_meet::src::models::questionnaire_model.dart::QuestionnaireModel" {
+  +String id
+  +bool enable
+  +int intents
+  +String frecuencia
+  +bool draftMode
+  +DateTime createdAt
+  +DateTime updateAt
+  +String roomId
+  +String title
+  +String description
+  +String toRawJson()
+  +Map<String, dynamic> toJson()
+}
+
+class "discover_meet::src::models::question_model.dart::QuestionModel" {
+  +String id
+  +String title
+  +QuestionType type
+  +int? minValue
+  +int? maxValue
+  +List<String> options
+  +DateTime createdAt
+  +DateTime updateAt
+  +QuestionnaireModel questionnaire
+  +String toRawJson()
+  +Map<String, dynamic> toJson()
+  {static} +List<QuestionModel> leerJsonListQuestion()
+}
+
+"discover_meet::src::models::question_model.dart::QuestionModel" o-- "discover_meet::src::models::QuestionType.dart::QuestionType"
+"discover_meet::src::models::question_model.dart::QuestionModel" o-- "discover_meet::src::models::questionnaire_model.dart::QuestionnaireModel"
+
+class "discover_meet::src::models::QuestionType.dart::QuestionType" {
+  +int index
+  {static} +List<QuestionType> values
+  {static} +QuestionType FLT
+}
+
+"discover_meet::src::models::QuestionType.dart::QuestionType" o-- "discover_meet::src::models::QuestionType.dart::QuestionType"
+"dart::core::Enum" <|-- "discover_meet::src::models::QuestionType.dart::QuestionType"
+
+class "discover_meet::src::exceptions::jwt_expired_exception.dart::JwtExpiredException" {
+  +String message
+}
+
+"dart::core::Exception" <|-- "discover_meet::src::exceptions::jwt_expired_exception.dart::JwtExpiredException"
+
+class "discover_meet::src::image_picker::image_picker_helper.dart::ImagePickerHelper" {
+  {static} +dynamic pickImage()
+}
+
+class "discover_meet::src::connections::token_validation_connection.dart::TokenValidationConnection" {
+  {static} +dynamic validateToken()
+}
+
+class "discover_meet::src::connections::question_connection.dart::QuestionConnection" {
+  +String endPointServer
+  +dynamic getQuestions()
+}
+
+class "discover_meet::src::connections::user_connection.dart::UserConnection" {
+  +String endPointServer
+  +dynamic login()
+  +dynamic uploadPhoto()
+}
+
+class "discover_meet::src::connections::room_connection.dart::RoomConnection" {
+  +String endPointServer
+  +dynamic getJoinedRooms()
+  +dynamic joinToRoom()
+}
+
+class "discover_meet::src::connections::questionnaire_connection.dart::QuestionnaireConnection" {
+  +String endPointServer
+  +dynamic getQuestionnairesOfRoom()
+}
+
+class "discover_meet::src::pages::menu_page.dart::MenuPage" {
+  +State<MenuPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "discover_meet::src::pages::menu_page.dart::MenuPage"
+
+class "discover_meet::src::pages::menu_page.dart::_MenuPageState" {
+  +Widget build()
+  +Widget choosePage()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "discover_meet::src::pages::menu_page.dart::_MenuPageState"
+
+class "discover_meet::src::pages::Room::room_list_page.dart::RoomListPage" {
+  +State<RoomListPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "discover_meet::src::pages::Room::room_list_page.dart::RoomListPage"
+
+class "discover_meet::src::pages::Room::room_list_page.dart::_RoomListPageState" {
+  -RoomConnection _roomConnection
+  +Widget build()
+}
+
+"discover_meet::src::pages::Room::room_list_page.dart::_RoomListPageState" o-- "discover_meet::src::connections::room_connection.dart::RoomConnection"
+"flutter::src::widgets::framework.dart::State" <|-- "discover_meet::src::pages::Room::room_list_page.dart::_RoomListPageState"
+
+class "discover_meet::src::pages::UserPage::login_page.dart::LoginPage" {
+  +_LoginPageState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "discover_meet::src::pages::UserPage::login_page.dart::LoginPage"
+
+class "discover_meet::src::pages::UserPage::login_page.dart::_LoginPageState" {
+  -GlobalKey<FormState> _formKey
+  -FocusNode _emailFocusNode
+  -FocusNode _passwordFocusNode
+  +String email
+  +String password
+  +bool obscureText
+  +InterfaceColors interfaceColors
+  +void dispose()
+  +Widget build()
+}
+
+"discover_meet::src::pages::UserPage::login_page.dart::_LoginPageState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"discover_meet::src::pages::UserPage::login_page.dart::_LoginPageState" o-- "flutter::src::widgets::focus_manager.dart::FocusNode"
+"discover_meet::src::pages::UserPage::login_page.dart::_LoginPageState" o-- "discover_meet::src::utils::interface_colors.dart::InterfaceColors"
+"flutter::src::widgets::framework.dart::State" <|-- "discover_meet::src::pages::UserPage::login_page.dart::_LoginPageState"
+
+class "discover_meet::src::pages::UserPage::user_page.dart::UserPage" {
+  +State<UserPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "discover_meet::src::pages::UserPage::user_page.dart::UserPage"
+
+class "discover_meet::src::pages::UserPage::user_page.dart::_UserPageState" {
+  +File? image
+  +UserConnection userConnection
+  +Widget build()
+}
+
+"discover_meet::src::pages::UserPage::user_page.dart::_UserPageState" o-- "dart::io::File"
+"discover_meet::src::pages::UserPage::user_page.dart::_UserPageState" o-- "discover_meet::src::connections::user_connection.dart::UserConnection"
+"flutter::src::widgets::framework.dart::State" <|-- "discover_meet::src::pages::UserPage::user_page.dart::_UserPageState"
+
+class "discover_meet::src::pages::Questionnaire::questionnaire_list_page.dart::QuestionnaireListPage" {
+  +State<QuestionnaireListPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "discover_meet::src::pages::Questionnaire::questionnaire_list_page.dart::QuestionnaireListPage"
+
+class "discover_meet::src::pages::Questionnaire::questionnaire_list_page.dart::_QuestionnaireListPageState" {
+  -QuestionnaireConnection _questionnaireConnection
+  +Widget build()
+}
+
+"discover_meet::src::pages::Questionnaire::questionnaire_list_page.dart::_QuestionnaireListPageState" o-- "discover_meet::src::connections::questionnaire_connection.dart::QuestionnaireConnection"
+"flutter::src::widgets::framework.dart::State" <|-- "discover_meet::src::pages::Questionnaire::questionnaire_list_page.dart::_QuestionnaireListPageState"
+
+class "discover_meet::src::pages::Question::question_list_page.dart::QuestionListPage" {
+  +State<QuestionListPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "discover_meet::src::pages::Question::question_list_page.dart::QuestionListPage"
+
+class "discover_meet::src::pages::Question::question_list_page.dart::_QuestionListPageState" {
+  -QuestionConnection _questionConnection
+  +Widget build()
+}
+
+"discover_meet::src::pages::Question::question_list_page.dart::_QuestionListPageState" o-- "discover_meet::src::connections::question_connection.dart::QuestionConnection"
+"flutter::src::widgets::framework.dart::State" <|-- "discover_meet::src::pages::Question::question_list_page.dart::_QuestionListPageState"
+
+class "discover_meet::src::pages::Question::question_page.dart::QuestionPage" {
+  +QuestionModel questionModel
+  +State<QuestionPage> createState()
+}
+
+"discover_meet::src::pages::Question::question_page.dart::QuestionPage" o-- "discover_meet::src::models::question_model.dart::QuestionModel"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "discover_meet::src::pages::Question::question_page.dart::QuestionPage"
+
+class "discover_meet::src::pages::Question::question_page.dart::_QuestionPageState" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "discover_meet::src::pages::Question::question_page.dart::_QuestionPageState"
+
+class "discover_meet::src::custom_widgets::app_bar_discover.dart::AppBarDiscover" {
+  {static} +PreferredSizeWidget build()
+}
+
+class "discover_meet::src::custom_widgets::room_widget.dart::RoomWidget" {
+  +RoomModel roomModel
+  +dynamic Function() onTap
+  +Widget build()
+}
+
+"discover_meet::src::custom_widgets::room_widget.dart::RoomWidget" o-- "discover_meet::src::models::room_model.dart::RoomModel"
+"discover_meet::src::custom_widgets::room_widget.dart::RoomWidget" o-- "null::dynamic Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "discover_meet::src::custom_widgets::room_widget.dart::RoomWidget"
+
+class "discover_meet::src::custom_widgets::questionnaire_widget.dart::QuestionnaireWidget" {
+  +QuestionnaireModel questionnaire
+  +dynamic Function() onTap
+  +Widget build()
+}
+
+"discover_meet::src::custom_widgets::questionnaire_widget.dart::QuestionnaireWidget" o-- "discover_meet::src::models::questionnaire_model.dart::QuestionnaireModel"
+"discover_meet::src::custom_widgets::questionnaire_widget.dart::QuestionnaireWidget" o-- "null::dynamic Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "discover_meet::src::custom_widgets::questionnaire_widget.dart::QuestionnaireWidget"
+
+
+@enduml

@@ -7,6 +7,10 @@ import 'package:discover_meet/main.dart';
 import 'package:discover_meet/src/connections/user_connection.dart';
 import 'package:discover_meet/src/utils/interface_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/page_provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -33,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
     return Form(
       key: _formKey,
       child: SizedBox(
@@ -124,13 +129,11 @@ class _LoginPageState extends State<LoginPage> {
                         pref.email = email;
                         pref.password = password;
 
-                        if (kIsWeb) {
-                          pref.token = json.decode(res.body)['token'];
-                        } else {
-                          pref.token = res.headers['set-cookie'] ?? '';
-                        }
+                        pref.token = json.decode(res.body)['token'];
+
                         setState(() {
-                          Navigator.pushNamed(context, '/home');
+                          _pageProvider.page = 0;
+                          context.replace("/");
                         });
                       } else {
                         if (res.statusCode >= 400 && res.statusCode < 500) {

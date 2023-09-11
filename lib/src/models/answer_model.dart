@@ -1,49 +1,63 @@
-// To parse this JSON data, do
-//
-//     final answerModel = answerModelFromJson(jsonString);
+import 'dart:developer' as dev;
 
+import 'package:discover_meet/src/models/Option_model.dart';
+import 'package:discover_meet/src/models/json_convert_interface.dart';
+import 'package:discover_meet/src/models/user_model.dart';
+import 'package:discover_meet/src/models/question_model.dart';
+
+import 'package:json_annotation/json_annotation.dart';
 import 'dart:convert';
 
-import 'package:discover_meet/src/models/question_model.dart';
-import 'package:discover_meet/src/models/user_model.dart';
+import '../utils/utils.dart';
 
-class AnswerModel {
-  String id;
-  List<String> value;
-  DateTime createdAt;
-  DateTime updateAt;
+part 'answer_model.g.dart';
+
+@JsonSerializable()
+class AnswerModel implements JsonConvertInterface {
+  @JsonKey(name: "_id")
+  String? id;
+  @JsonKey(name: "value")
+  List<OptionModel> value;
+  @JsonKey(name: "question")
   QuestionModel question;
-  UserModel user;
+  @JsonKey(name: "user")
+  UserModel? user;
+  @JsonKey(name: "createdAt")
+  DateTime? createdAt;
+  @JsonKey(name: "updatedAt")
+  DateTime? updatedAt;
+  @JsonKey(name: "__v")
+  int? v;
 
   AnswerModel({
-    required this.id,
+    this.id,
     required this.value,
-    required this.createdAt,
-    required this.updateAt,
     required this.question,
-    required this.user,
+    this.user,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
   });
 
-  factory AnswerModel.fromRawJson(String str) =>
-      AnswerModel.fromJson(json.decode(str));
+  factory AnswerModel.fromJson(Map<String, dynamic> json) =>
+      _$AnswerModelFromJson(json);
 
-  String toRawJson() => json.encode(toJson());
+  Map<String, dynamic> toJson() => _$AnswerModelToJson(this);
 
-  factory AnswerModel.fromJson(Map<String, dynamic> json) => AnswerModel(
-        id: json["_id"],
-        value: List<String>.from(json["value"].map((x) => x)),
-        createdAt: DateTime.parse(json["createdAt"]),
-        updateAt: DateTime.parse(json["updateAt"]),
-        question: QuestionModel.fromJson(json["question"]),
-        user: UserModel.fromJson(json["user"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "_id": id,
-        "value": List<dynamic>.from(value.map((x) => x)),
-        "createdAt": createdAt.toIso8601String(),
-        "updateAt": updateAt.toIso8601String(),
-        "question": question.toJson(),
-        "user": user.toJson(),
-      };
+  static List<AnswerModel> fromJsonList(String body) {
+    body = Utils.formatJson(body);
+    List<AnswerModel> res = [];
+    dynamic decodedData = json.decode(body);
+    try {
+      for (var map in decodedData) {
+        var map2 = jsonDecode(map);
+        Map<String, dynamic> info = map2;
+        AnswerModel answer = AnswerModel.fromJson(info);
+        res.add(answer);
+      }
+    } catch (e) {
+      dev.log(e.toString());
+    }
+    return res;
+  }
 }
