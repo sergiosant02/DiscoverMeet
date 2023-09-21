@@ -26,7 +26,8 @@ class _UserPageState extends State<UserPage> {
 
   @override
   Widget build(BuildContext context) {
-    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
+    Size size = MediaQuery.of(context).size;
+    final PageProvider pageProvider = Provider.of<PageProvider>(context);
     final UserConnection userConnection = UserConnection();
     return FutureBuilder<UserModel>(
         future: userConnection.getCurrentUser(),
@@ -34,17 +35,16 @@ class _UserPageState extends State<UserPage> {
           if (snapshot.hasError) {
             return const Center(child: Text("Ha habido un error"));
           } else if (!snapshot.hasData) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
           UserModel user = snapshot.data!;
-          return Center(
-              child: Column(
+          return ListView(
             children: [
               UserCard(userModel: user),
               Container(
-                child: Text('user'),
+                child: const Text('user'),
               ),
               ElevatedButton(
                   onPressed: () async {
@@ -63,21 +63,33 @@ class _UserPageState extends State<UserPage> {
               if (image != null && !kIsWeb) ...[
                 SizedBox(height: 300, child: Image.file(File(image!.path)))
               ],
-              ElevatedButton(
-                  onPressed: () {
-                    context.goNamed('/updateUser',
-                        queryParameters: user.toJson());
-                  },
-                  child: const Text('Actualizar')),
-              ElevatedButton(
-                  onPressed: () {
-                    _pageProvider.page = 1;
-                    pref.token = '';
-                    context.replace('/');
-                  },
-                  child: const Text('Sing out')),
+              SizedBox(
+                height: size.height * 0.35,
+              ),
+              ListTile(
+                onTap: () {
+                  context.goNamed('/updateUser',
+                      queryParameters: user.toJson());
+                },
+                title: const Text('Actualizar perfil'),
+                leading: const Icon(Icons.upload_file_outlined),
+                tileColor: Colors.white,
+                trailing: const Icon(Icons.arrow_forward_ios),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                onTap: () {
+                  pageProvider.page = 1;
+                  pref.token = '';
+                  context.replace('/');
+                },
+                title: const Text('Cerrar sesión'),
+                leading: const Icon(Icons.outbond_outlined),
+                tileColor: Colors.white,
+                trailing: const Icon(Icons.arrow_forward_ios),
+              ),
             ],
-          ));
+          );
         });
   }
 }

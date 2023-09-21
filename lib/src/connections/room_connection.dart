@@ -2,17 +2,10 @@ import 'dart:async';
 import 'dart:developer' as dev;
 
 import 'package:discover_meet/main.dart';
-import 'package:discover_meet/src/exceptions/jwt_expired_exception.dart';
-import 'package:discover_meet/src/models/questionnaire_model.dart';
 import 'package:discover_meet/src/models/room_model.dart';
 import 'package:discover_meet/src/models/user_model.dart';
-import 'package:discover_meet/src/utils/utils.dart';
-import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
-import '../providers/page_provider.dart';
 import '../utils/constantes_globales.dart';
 
 class RoomConnection {
@@ -43,6 +36,48 @@ class RoomConnection {
         Uri.http(endPointServer, 'api/room/addParticipant', {'roomCode': code});
     bool res = true;
     final response = await http.post(
+      uri,
+      headers: {
+        'Cookie': pref.token,
+        'set-cookie': pref.token,
+        'Authorization': pref.token,
+      },
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      res = true;
+    } else {
+      res = false;
+    }
+    return res;
+  }
+
+  Future<bool> createRoom(String title) async {
+    Uri uri = Uri.http(
+      endPointServer,
+      'api/room/create',
+    );
+    bool res = true;
+    final response = await http.post(
+      uri,
+      body: {'title': title},
+      headers: {
+        'Cookie': pref.token,
+        'set-cookie': pref.token,
+        'Authorization': pref.token,
+      },
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      res = true;
+    } else {
+      res = false;
+    }
+    return res;
+  }
+
+  Future<bool> deleteRoom(String roomId) async {
+    Uri uri = Uri.http(endPointServer, 'api/room/delete', {"roomId": roomId});
+    bool res = true;
+    final response = await http.delete(
       uri,
       headers: {
         'Cookie': pref.token,

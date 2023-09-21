@@ -16,13 +16,13 @@ class MyRoomWidget extends StatelessWidget {
     required this.roomModel,
     required this.onTap,
   }) : super(key: key);
-  RoomConnection _roomConnection = RoomConnection();
+  final RoomConnection _roomConnection = RoomConnection();
   final _formKey = GlobalKey<FormState>();
   String newTitle = "";
 
   @override
   Widget build(BuildContext context) {
-    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
+    final PageProvider pageProvider = Provider.of<PageProvider>(context);
 
     final size = MediaQuery.of(context).size;
     return InkWell(
@@ -30,6 +30,7 @@ class MyRoomWidget extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 5),
         padding: const EdgeInsets.all(10),
+        width: size.width * 0.8,
         decoration: BoxDecoration(boxShadow: const [
           BoxShadow(
             color: Colors.black26,
@@ -51,7 +52,7 @@ class MyRoomWidget extends StatelessWidget {
                   ),
                 ),
                 Text("Código: ${roomModel.code}"),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Text(
                   "Creada: ${Utils.formatDate(roomModel.createdAt)}",
                   style: const TextStyle(
@@ -77,15 +78,24 @@ class MyRoomWidget extends StatelessWidget {
               children: [
                 TextButton(
                     onPressed: () {
-                      dialogShow(context, size, _pageProvider);
+                      dialogShow(context, size, pageProvider);
                     },
-                    child: Text("Cambiar nombre")),
+                    child: const Text("Cambiar nombre")),
                 TextButton(
                     onPressed: () {
                       context.go("/${roomModel.id}/participants");
                     },
-                    child: Text("Ver participantes")),
-                TextButton(onPressed: () {}, child: Text("Eliminar sala")),
+                    child: const Text("Ver participantes")),
+                TextButton(
+                    onPressed: () async {
+                      await _roomConnection.deleteRoom(roomModel.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Sala eliminada')),
+                      );
+                      pageProvider.page = 1;
+                      context.go("/");
+                    },
+                    child: const Text("Eliminar sala")),
               ],
             )
           ],
@@ -94,7 +104,7 @@ class MyRoomWidget extends StatelessWidget {
     );
   }
 
-  void dialogShow(BuildContext context, Size size, PageProvider _pageProvider) {
+  void dialogShow(BuildContext context, Size size, PageProvider pageProvider) {
     showDialog(
         context: context,
         builder: (context) {
@@ -124,6 +134,7 @@ class MyRoomWidget extends StatelessWidget {
                       if (value != null && value.isEmpty) {
                         return "Debe introducir un código";
                       }
+                      return null;
                     },
                   ),
                   const SizedBox(
@@ -145,7 +156,7 @@ class MyRoomWidget extends StatelessWidget {
                               context.replace('/');
                               await _roomConnection.changeTitle(
                                   roomModel.id, newTitle);
-                              _pageProvider.page = 0;
+                              pageProvider.page = 0;
                             }
                           },
                           child: const Text('Aceptar'))

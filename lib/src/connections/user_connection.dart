@@ -21,6 +21,40 @@ class UserConnection {
     }
   }
 
+  Future<http.Response> signup(UserModel user) async {
+    try {
+      Uri uri = Uri.http(endPointServer, 'api/register');
+      final http.Response response = await http.post(uri, body: user.toJson());
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<http.Response> updateUser(UserModel user) async {
+    try {
+      dev.log("Actualizando usuario: ${user.createdAt!.toIso8601String()}");
+      Uri uri = Uri.http(endPointServer, 'api/update');
+      Map<String, dynamic> body = user.toJson();
+      final http.Response response = await http.put(
+        uri,
+        body: body,
+        headers: {
+          'Cookie': pref.token,
+          'set-cookie': pref.token,
+          'Authorization': pref.token,
+        },
+      );
+      if (response.statusCode == 400) {
+        dev.log(response.body);
+      }
+      return response;
+    } catch (e) {
+      dev.log(e.toString());
+      rethrow;
+    }
+  }
+
   Future uploadPhoto(XFile file) async {
     try {
       Uri uri = Uri.http(endPointServer, 'api/uploadPicture');

@@ -16,7 +16,7 @@ import '../../custom_widgets/custom_button.dart';
 import '../../providers/page_provider.dart';
 
 class QuestionPage extends StatefulWidget {
-  QuestionPage(
+  const QuestionPage(
       {super.key,
       required this.questionModel,
       required this.index,
@@ -38,15 +38,16 @@ class _QuestionPageState extends State<QuestionPage> {
   TextEditingController textEditingControllerNumber = TextEditingController();
   TextEditingController textEditingController = TextEditingController();
   OptionModel? _optOptionSelected;
-  List<bool> _optOptionsSelected = [];
+  final List<bool> _optOptionsSelected = [];
   String _textAnswer = "";
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
 
-    if (widget.questionModel.minValue != null)
+    if (widget.questionModel.minValue != null) {
       _value = widget.questionModel.minValue! * 1.0;
+    }
     textEditingControllerNumber.text = _value.toStringAsFixed(1);
     for (var i = 0; i < widget.questionModel.options.length; i++) {
       _optOptionsSelected.add(false);
@@ -100,7 +101,7 @@ class _QuestionPageState extends State<QuestionPage> {
                             QuestionType.CHOOSEU &&
                         _optOptionSelected == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           duration: Duration(milliseconds: 400),
                           content: Text("Debe seleccionar una opción"),
                         ),
@@ -109,7 +110,7 @@ class _QuestionPageState extends State<QuestionPage> {
                             QuestionType.CHOOSEM &&
                         !_optOptionsSelected.contains(true)) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           duration: Duration(milliseconds: 400),
                           content: Text("Debe seleccionar al menos una opción"),
                         ),
@@ -157,7 +158,7 @@ class _QuestionPageState extends State<QuestionPage> {
                         answerConnection.postAnswerList(widget.answers);
                       } else {
                         widget.pageController.nextPage(
-                            duration: Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 300),
                             curve: Curves.linear);
                       }
                     }
@@ -287,7 +288,7 @@ class _QuestionPageState extends State<QuestionPage> {
           width: 56,
         ),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 10),
           height: 100,
           width: size.width * 0.4,
           child: TextFormField(
@@ -322,6 +323,7 @@ class _QuestionPageState extends State<QuestionPage> {
                   return "El valor debe ser un número decimal entre ${widget.questionModel.minValue} y ${widget.questionModel.maxValue}";
                 }
               }
+              return null;
             },
           ),
         ),

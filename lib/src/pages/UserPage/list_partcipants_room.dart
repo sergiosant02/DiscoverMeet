@@ -1,5 +1,4 @@
 import 'package:discover_meet/src/connections/room_connection.dart';
-import 'package:discover_meet/src/models/room_model.dart';
 import 'package:discover_meet/src/models/user_model.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +14,7 @@ class ListParticipantsRoom extends StatefulWidget {
 }
 
 class _ListParticipantsRoomState extends State<ListParticipantsRoom> {
-  RoomConnection _roomConnection = RoomConnection();
+  final RoomConnection _roomConnection = RoomConnection();
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +25,10 @@ class _ListParticipantsRoomState extends State<ListParticipantsRoom> {
           future: _roomConnection.getListParticipants(widget.roomModelId),
           builder: (context, snap) {
             if (snap.hasError) {
-              return Center(
+              return const Center(
                   child: Text('Error al cargar la lista de participantes'));
             } else if (!snap.hasData) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else {
               List<UserModel> participants = snap.data!;
               return ListView.builder(
@@ -40,7 +39,7 @@ class _ListParticipantsRoomState extends State<ListParticipantsRoom> {
                         borderRadius: BorderRadius.circular(5),
                         color: Colors.white,
                       ),
-                      margin: EdgeInsets.all(5),
+                      margin: const EdgeInsets.all(5),
                       child: ListTile(
                         title: Text(participants[index].firstName),
                       ),

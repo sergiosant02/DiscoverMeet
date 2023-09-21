@@ -13,9 +13,9 @@ class AppBarDiscover {
   static PreferredSizeWidget build(BuildContext context, bool showSearch,
       {bool showBackButton = true}) {
     String roomCode = '';
-    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
+    final PageProvider pageProvider = Provider.of<PageProvider>(context);
     RoomConnection roomConnection = RoomConnection();
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final size = MediaQuery.of(context).size;
     return AppBar(
       automaticallyImplyLeading: showBackButton,
@@ -44,7 +44,7 @@ class AppBarDiscover {
                           builder: (context) {
                             return Dialog(
                               child: Form(
-                                key: _formKey,
+                                key: formKey,
                                 child: Container(
                                   decoration: BoxDecoration(
                                       color: Colors.white,
@@ -71,6 +71,7 @@ class AppBarDiscover {
                                         if (value != null && value.isEmpty) {
                                           return "Debe introducir un código";
                                         }
+                                        return null;
                                       },
                                     ),
                                     const SizedBox(
@@ -87,13 +88,13 @@ class AppBarDiscover {
                                         const Spacer(),
                                         TextButton(
                                             onPressed: () async {
-                                              if (_formKey.currentState!
+                                              if (formKey.currentState!
                                                   .validate()) {
                                                 Navigator.pop(context);
                                                 context.replace('/');
                                                 await roomConnection
                                                     .joinToRoom(roomCode);
-                                                _pageProvider.page = 0;
+                                                pageProvider.page = 0;
                                               }
                                             },
                                             child: const Text('Buscar'))

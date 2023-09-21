@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 import 'package:discover_meet/main.dart';
 import 'package:discover_meet/src/connections/user_connection.dart';
 import 'package:discover_meet/src/utils/interface_colors.dart';
@@ -37,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
+    final PageProvider pageProvider = Provider.of<PageProvider>(context);
     return Form(
       key: _formKey,
       child: SizedBox(
@@ -114,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                       });
                     }),
                 SizedBox(
-                  height: size.height * 0.2,
+                  height: size.height * 0.15,
                 ),
                 ElevatedButton(
                   onPressed: () async {
@@ -132,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                         pref.token = json.decode(res.body)['token'];
 
                         setState(() {
-                          _pageProvider.page = 0;
+                          pageProvider.page = 0;
                           context.replace("/");
                         });
                       } else {

@@ -1,3 +1,4 @@
+
 enum BloodType {
   AP,
   BP,
@@ -7,6 +8,41 @@ enum BloodType {
   BL,
   OL,
   ABL;
+
+  static String getString(BloodType bloodType) {
+    String res;
+    switch (bloodType) {
+      case BloodType.AP:
+        res = "A+";
+        break;
+      case BloodType.BP:
+        res = "B+";
+        break;
+      case BloodType.OP:
+        res = "O+";
+        break;
+      case ABP:
+        res = "AB+";
+        break;
+      case BloodType.AL:
+        res = "A-";
+        break;
+      case BloodType.BL:
+        res = "B-";
+        break;
+      case BloodType.OL:
+        res = "O-";
+        break;
+      case BloodType.ABL:
+        res = "AB-";
+        break;
+
+      default:
+        res = "A+";
+        break;
+    }
+    return res;
+  }
 
   static BloodType fromString(String txt) {
     String str = txt.toUpperCase();

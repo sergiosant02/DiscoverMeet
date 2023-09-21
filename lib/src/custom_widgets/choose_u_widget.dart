@@ -3,7 +3,6 @@
 import 'package:discover_meet/src/models/Option_model.dart';
 import 'package:discover_meet/src/models/question_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ChooseUWidget extends StatefulWidget {
   final QuestionModel questionModel;

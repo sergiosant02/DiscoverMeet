@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:discover_meet/src/models/json_convert_interface.dart';
-import 'package:discover_meet/src/models/question_model.dart';
 import 'dart:developer' as dev;
 
 import '../utils/utils.dart';

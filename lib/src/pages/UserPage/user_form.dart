@@ -1,8 +1,13 @@
+import 'package:discover_meet/src/connections/user_connection.dart';
 import 'package:discover_meet/src/custom_widgets/app_bar_discover.dart';
+import 'package:discover_meet/src/models/blood_types_enum.dart';
 import 'package:discover_meet/src/models/genre_enum.dart';
 import 'package:discover_meet/src/models/user_model.dart';
 import 'package:discover_meet/src/utils/interface_colors.dart';
+import 'package:discover_meet/src/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/page_provider.dart';
@@ -23,7 +28,9 @@ class _UserFormState extends State<UserForm> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   Genre selectedValueGenre = Genre.MALE;
+  BloodType selectedValueBlood = BloodType.AP;
   String passwordConfirmation = "";
+  final UserConnection _userConnection = UserConnection();
 
   @override
   void initState() {
@@ -35,7 +42,7 @@ class _UserFormState extends State<UserForm> {
 
   @override
   Widget build(BuildContext context) {
-    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
+    final PageProvider pageProvider = Provider.of<PageProvider>(context);
 
     return Scaffold(
       appBar: AppBarDiscover.build(context, false),
@@ -48,7 +55,7 @@ class _UserFormState extends State<UserForm> {
             children: [
               TextFormField(
                 initialValue: widget.user.firstName,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Nombre', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -66,7 +73,7 @@ class _UserFormState extends State<UserForm> {
               TextFormField(
                 //controller: lastNameController,
                 initialValue: widget.user.lastName,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Apellido', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -84,7 +91,7 @@ class _UserFormState extends State<UserForm> {
               TextFormField(
                 //controller: emailController,
                 initialValue: widget.user.email,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Email', border: OutlineInputBorder()),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
@@ -106,7 +113,7 @@ class _UserFormState extends State<UserForm> {
               TextFormField(
                 //controller: phoneController,
                 initialValue: widget.user.phone,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Teléfono', border: OutlineInputBorder()),
                 keyboardType: TextInputType.phone,
                 validator: (value) {
@@ -134,7 +141,7 @@ class _UserFormState extends State<UserForm> {
                   }
                   return null;
                 },
-                decoration: InputDecoration(border: OutlineInputBorder()),
+                decoration: const InputDecoration(border: OutlineInputBorder()),
                 onChanged: (value) {
                   setState(() {
                     if (value != null) {
@@ -146,22 +153,64 @@ class _UserFormState extends State<UserForm> {
               const SizedBox(
                 height: 20,
               ),
+              DropdownButtonFormField(
+                value: selectedValueBlood,
+                items: dropdownItemsblood,
+                validator: (value) {
+                  if (value == null) {
+                    return "Debes especificar un tipo sanguíneo";
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(border: OutlineInputBorder()),
+                onChanged: (value) {
+                  setState(() {
+                    if (value != null) {
+                      selectedValueBlood = value;
+                    }
+                  });
+                },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    DateTime? date = await showDatePicker(
+                      context: context,
+                      initialDate: widget.user.birthDate,
+                      firstDate: DateTime(1920, 1, 1),
+                      currentDate: widget.user.birthDate,
+                      lastDate: DateTime.now(),
+                    );
+
+                    if (date != null) {
+                      setState(() {
+                        widget.user.birthDate = date;
+                      });
+                    }
+                  },
+                  child: Text(
+                      "Fecha de nacimiento: ${Utils.formatDate(widget.user.birthDate)}")),
+              const SizedBox(
+                height: 20,
+              ),
               TextFormField(
                 //controller: passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Contraseña', border: OutlineInputBorder()),
                 obscureText: true,
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Por favor, ingresa tu contraseña';
                   }
-                  if (value!.length < 8) {
+                  if (value.length < 8) {
                     return 'La contraseña debe tener al menos 8 caracteres';
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  widget.user.password = value!;
+                onChanged: (value) {
+                  widget.user.password = value;
                 },
               ),
               const SizedBox(
@@ -169,7 +218,7 @@ class _UserFormState extends State<UserForm> {
               ),
               TextFormField(
                 //controller: passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     labelText: 'Confirmación de contraseña',
                     border: OutlineInputBorder()),
                 obscureText: true,
@@ -177,7 +226,7 @@ class _UserFormState extends State<UserForm> {
                   if (value!.isEmpty) {
                     return 'Por favor, ingresa tu contraseña';
                   }
-                  if (value!.length < 8) {
+                  if (value.length < 8) {
                     return 'La contraseña debe tener al menos 8 caracteres';
                   }
                   if (passwordConfirmation != widget.user.password) {
@@ -185,26 +234,35 @@ class _UserFormState extends State<UserForm> {
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  passwordConfirmation = value!;
+                onChanged: (value) {
+                  passwordConfirmation = value;
                 },
               ),
               const SizedBox(
                 height: 20,
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     // Si el formulario es válido, guarda los valores
                     _formKey.currentState!.save();
-
-                    // Realiza cualquier acción necesaria con los datos aquí
-                    // Por ejemplo, puedes enviarlos al servidor o hacer algo más.
-
-                    // Luego, puedes redirigir o mostrar un mensaje de éxito, etc.
+                    print(widget.user.toJson());
+                    // Actualiza el usuario
+                    Response res =
+                        await _userConnection.updateUser(widget.user);
+                    if (res.statusCode < 400) {
+                      context.go("/");
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content:
+                              Text("No se ha podido actualizar el usuario"),
+                        ),
+                      );
+                    }
                   }
                 },
-                child: Text('Guardar'),
+                child: const Text('Guardar'),
               ),
             ],
           ),
@@ -235,9 +293,31 @@ class _UserFormState extends State<UserForm> {
 
   List<DropdownMenuItem<Genre>> get dropdownItemsGenre {
     List<DropdownMenuItem<Genre>> menuItems = [
-      const DropdownMenuItem(child: Text("Hombre"), value: Genre.MALE),
-      const DropdownMenuItem(child: Text("Mujer"), value: Genre.FEMALE),
+      const DropdownMenuItem(value: Genre.MALE, child: Text("Hombre")),
+      const DropdownMenuItem(value: Genre.FEMALE, child: Text("Mujer")),
     ];
     return menuItems;
+  }
+
+  List<DropdownMenuItem<BloodType>> get dropdownItemsblood => BloodType.values
+      .map(
+        (e) => DropdownMenuItem(value: e, child: Text(BloodType.getString(e))),
+      )
+      .toList();
+
+  void _selectDate(BuildContext context, UserModel user) async {
+    DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: user.birthDate,
+      firstDate: DateTime(1920, 1, 1),
+      currentDate: user.birthDate,
+      lastDate: DateTime.now(),
+    );
+
+    if (date != null) {
+      setState(() {
+        user.birthDate = date;
+      });
+    }
   }
 }

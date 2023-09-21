@@ -1,6 +1,4 @@
-import 'package:discover_meet/src/models/question_model.dart';
 import 'package:discover_meet/src/models/questionnaire_model.dart';
-import 'package:discover_meet/src/models/room_model.dart';
 import 'package:flutter/material.dart';
 
 class QuestionnaireWidget extends StatelessWidget {

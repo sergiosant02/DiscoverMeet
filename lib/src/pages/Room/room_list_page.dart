@@ -1,14 +1,9 @@
-import 'dart:developer';
 
 import 'package:discover_meet/main.dart';
 import 'package:discover_meet/src/connections/room_connection.dart';
-import 'package:discover_meet/src/connections/token_validation_connection.dart';
 import 'package:discover_meet/src/custom_widgets/room_widget.dart';
-import 'package:discover_meet/src/exceptions/jwt_expired_exception.dart';
 import 'package:discover_meet/src/models/room_model.dart';
-import 'package:discover_meet/src/pages/Questionnaire/questionnaire_list_page.dart';
 import 'package:discover_meet/src/providers/page_provider.dart';
-import 'package:discover_meet/src/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +19,7 @@ class _RoomListPageState extends State<RoomListPage> {
   final RoomConnection _roomConnection = RoomConnection();
   @override
   Widget build(BuildContext context) {
-    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
+    final PageProvider pageProvider = Provider.of<PageProvider>(context);
     if (validToken) {
       return FutureBuilder(
           future: _roomConnection.getJoinedRooms(),
@@ -64,7 +59,7 @@ class _RoomListPageState extends State<RoomListPage> {
                 onPressed: () {
                   pref.token = '';
                   context.replace("/");
-                  _pageProvider.page = 1;
+                  pageProvider.page = 1;
                 },
                 child: const Text('Iniciar sesión'))
           ],

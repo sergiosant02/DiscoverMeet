@@ -28,8 +28,8 @@ class AnswerConnection {
     if (response.statusCode == 401) {
       validToken = false;
     } else if (response.statusCode == 400) {
-      dev.log("Body: " + response.body);
-      dev.log("Response: " + response.toString());
+      dev.log("Body: ${response.body}");
+      dev.log("Response: $response");
     }
     return questionModelList;
   }
@@ -38,7 +38,7 @@ class AnswerConnection {
       List<AnswerModel> answerModelLis) async {
     List<QuestionModel> questionModelList = [];
     for (AnswerModel ans in answerModelLis) {
-      this.postAnswer(ans);
+      postAnswer(ans);
     }
     return questionModelList;
   }

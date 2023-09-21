@@ -1,35 +1,50 @@
+// ignore_for_file: prefer_final_fields
+
 
 import 'package:discover_meet/src/connections/questionnaire_connection.dart';
 import 'package:discover_meet/src/custom_widgets/app_bar_discover.dart';
-import 'package:discover_meet/src/custom_widgets/questionnaire_widget.dart';
+import 'package:discover_meet/src/custom_widgets/my_questionnaire_widget.dart';
 import 'package:discover_meet/src/utils/interface_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/questionnaire_model.dart';
 
-class QuestionnaireListPage extends StatefulWidget {
+class MyQuestionnaireListPage extends StatefulWidget {
   final String roomId;
-  const QuestionnaireListPage({super.key, required this.roomId});
+  const MyQuestionnaireListPage({super.key, required this.roomId});
 
   @override
-  State<QuestionnaireListPage> createState() => _QuestionnaireListPageState();
+  State<MyQuestionnaireListPage> createState() =>
+      _MyQuestionnaireListPageState();
 }
 
-class _QuestionnaireListPageState extends State<QuestionnaireListPage> {
-  final QuestionnaireConnection _questionnaireConnection = QuestionnaireConnection();
+class _MyQuestionnaireListPageState extends State<MyQuestionnaireListPage> {
+  QuestionnaireConnection _questionnaireConnection = QuestionnaireConnection();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: InterfaceColors.principalColor,
+        onPressed: () {},
+        label: const Text(
+          "Añadir questionario",
+          style: TextStyle(color: Colors.white),
+        ),
+        icon: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
       backgroundColor: InterfaceColors.backgroundColor,
       appBar: AppBarDiscover.build(context, false),
       body: Padding(
         padding:
             const EdgeInsets.only(top: 3.0, left: 15, right: 15, bottom: 3),
         child: FutureBuilder(
-            future:
-                _questionnaireConnection.getQuestionnairesOfRoom(widget.roomId),
+            future: _questionnaireConnection
+                .getMyQuestionnairesOfRoom(widget.roomId),
             builder: (BuildContext context,
                 AsyncSnapshot<List<QuestionnaireModel>> snapshot) {
               if (!snapshot.hasData) {
@@ -48,7 +63,7 @@ class _QuestionnaireListPageState extends State<QuestionnaireListPage> {
                 return ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, i) {
-                      return QuestionnaireWidget(
+                      return MyQuestionnaireWidget(
                           questionnaire: data[i],
                           onTap: () {
                             GoRouter.of(context).go(

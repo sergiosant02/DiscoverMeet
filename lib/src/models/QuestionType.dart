@@ -1,6 +1,4 @@
-import 'dart:math';
 
-import 'package:flutter/material.dart';
 
 enum QuestionType {
   FLT(type: 'flt'),

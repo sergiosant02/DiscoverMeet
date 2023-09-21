@@ -10,7 +10,6 @@ import 'package:discover_meet/src/models/file_model.dart';
 import 'package:discover_meet/src/models/genre_enum.dart';
 import 'package:discover_meet/src/models/json_convert_interface.dart';
 import 'package:discover_meet/src/utils/utils.dart';
-import 'package:get/utils.dart';
 
 class UserModel implements JsonConvertInterface {
   String? id;
@@ -97,11 +96,11 @@ class UserModel implements JsonConvertInterface {
         "phone": phone,
         "role": role,
         "genre": Genre.getString(genre),
-        "blood": blood.toString(),
+        "blood": blood.toString().split(".")[1],
         "birthDate": birthDate.toIso8601String(),
-        "createdAt": createdAt != null ? createdAt!.toIso8601String() : null,
-        "updateAt": updatedAt != null ? updatedAt!.toIso8601String() : null,
-        "picture": picture != null ? picture!.toJson() : null
+        "createdAt": createdAt != null ? createdAt!.toIso8601String() : '',
+        "updateAt": updatedAt != null ? updatedAt!.toIso8601String() : '',
+        "picture": picture != null ? picture!.toJson() : ''
       };
 
   static List<UserModel> fromJsonList(String body) {
@@ -115,7 +114,7 @@ class UserModel implements JsonConvertInterface {
         res.add(user);
       }
     } catch (e) {
-      dev.log("Error: " + e.toString());
+      dev.log("Error: $e");
     }
     return res;
   }

@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../connections/room_connection.dart';
-import '../../custom_widgets/room_widget.dart';
 import '../../providers/page_provider.dart';
 
 class MyRoomListPage extends StatefulWidget {
@@ -20,7 +19,7 @@ class _MyRoomListPageState extends State<MyRoomListPage> {
   final RoomConnection _roomConnection = RoomConnection();
   @override
   Widget build(BuildContext context) {
-    final PageProvider _pageProvider = Provider.of<PageProvider>(context);
+    final PageProvider pageProvider = Provider.of<PageProvider>(context);
     if (validToken) {
       return FutureBuilder(
           future: _roomConnection.getMyRooms(),
@@ -38,7 +37,7 @@ class _MyRoomListPageState extends State<MyRoomListPage> {
                   return MyRoomWidget(
                     roomModel: data[i],
                     onTap: () {
-                      context.go("/${data[i].id}/questionnaire");
+                      context.go("/${data[i].id}/questionnaire/mine");
                     },
                   );
                 });
@@ -60,7 +59,7 @@ class _MyRoomListPageState extends State<MyRoomListPage> {
                 onPressed: () {
                   pref.token = '';
                   context.replace("/");
-                  _pageProvider.page = 1;
+                  pageProvider.page = 1;
                 },
                 child: const Text('Iniciar sesión'))
           ],

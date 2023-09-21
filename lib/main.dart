@@ -1,6 +1,6 @@
-import 'package:discover_meet/src/models/room_model.dart';
 import 'package:discover_meet/src/models/user_model.dart';
 import 'package:discover_meet/src/pages/Question/question_list_page.dart';
+import 'package:discover_meet/src/pages/Questionnaire/my_questionnaire_list_page.dart';
 import 'package:discover_meet/src/pages/Questionnaire/questionnaire_list_page.dart';
 import 'package:discover_meet/src/pages/UserPage/list_partcipants_room.dart';
 import 'package:discover_meet/src/pages/UserPage/user_form.dart';
@@ -30,6 +30,18 @@ class MyApp extends StatelessWidget {
           GoRoute(
               path: ':roomId/questionnaire',
               builder: (context, state) => QuestionnaireListPage(
+                  roomId: state.pathParameters['roomId']!),
+              routes: [
+                GoRoute(
+                    path: ':questionnaireId/question',
+                    builder: (context, state) => QuestionListPage(
+                          questionnaireId:
+                              state.pathParameters["questionnaireId"]!,
+                        )),
+              ]),
+          GoRoute(
+              path: ':roomId/questionnaire/mine',
+              builder: (context, state) => MyQuestionnaireListPage(
                   roomId: state.pathParameters['roomId']!),
               routes: [
                 GoRoute(

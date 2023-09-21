@@ -1,6 +1,5 @@
 import 'package:discover_meet/src/models/json_convert_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'dart:convert';
 
 part 'Option_model.g.dart';
 
