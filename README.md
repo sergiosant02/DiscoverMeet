@@ -1,16 +1,7 @@
-# discover_meet
+## discover meet
 
-A new Flutter project.
+Proyecto flutter con el fin de conseguir una implementación en entornos, android, ios y web, que permita a los usuarios registrarse, ingresar y crear salas, cuestionarios y preguntas, así como responderlas y visualizar resultados.
 
-## Getting Started
+EL objetivo es facilitar la recolección de datos a través de encuestas y cuestionarios de forma sencilla para cualquier tipo de usuario. 
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_final_fields
 
-
 import 'package:discover_meet/src/connections/questionnaire_connection.dart';
 import 'package:discover_meet/src/custom_widgets/app_bar_discover.dart';
 import 'package:discover_meet/src/custom_widgets/my_questionnaire_widget.dart';
@@ -24,6 +23,7 @@ class _MyQuestionnaireListPageState extends State<MyQuestionnaireListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: InterfaceColors.principalColor,
@@ -39,7 +39,8 @@ class _MyQuestionnaireListPageState extends State<MyQuestionnaireListPage> {
       ),
       backgroundColor: InterfaceColors.backgroundColor,
       appBar: AppBarDiscover.build(context, false),
-      body: Padding(
+      body: Container(
+        width: size.width,
         padding:
             const EdgeInsets.only(top: 3.0, left: 15, right: 15, bottom: 3),
         child: FutureBuilder(
@@ -51,8 +52,7 @@ class _MyQuestionnaireListPageState extends State<MyQuestionnaireListPage> {
                 return const Center(
                     child: CircularProgressIndicator.adaptive());
               } else if (snapshot.hasError) {
-                return Center(
-                    child: Text('Error: ${snapshot.error}'));
+                return Center(child: Text('Error: ${snapshot.error}'));
               } else {
                 List<QuestionnaireModel> data = snapshot.data!;
                 if (data.isEmpty) {

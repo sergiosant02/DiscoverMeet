@@ -40,62 +40,83 @@ class MyRoomWidget extends StatelessWidget {
         ], color: Colors.white, borderRadius: BorderRadius.circular(5)),
         child: Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: size.width * 0.4,
-                  child: Text(
-                    roomModel.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.clip,
+            SizedBox(
+              width: size.width * 0.6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      roomModel.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      overflow: TextOverflow.clip,
+                    ),
                   ),
-                ),
-                Text("Código: ${roomModel.code}"),
-                const SizedBox(height: 40),
-                Text(
-                  "Creada: ${Utils.formatDate(roomModel.createdAt)}",
-                  style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black26,
-                      fontWeight: FontWeight.w100),
-                ),
-                if (!roomModel.createdAt
-                    .isAtSameMomentAs(roomModel.updatedAt)) ...[
-                  Text(
-                    "Actualizada: ${Utils.formatDate(roomModel.updatedAt)}",
-                    style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black26,
-                        fontWeight: FontWeight.w100),
-                  )
-                ]
-              ],
+                  FittedBox(
+                    child: Text("Código: ${roomModel.code}"),
+                    fit: BoxFit.scaleDown,
+                  ),
+                  const SizedBox(height: 40),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      "Creada: ${Utils.formatDate(roomModel.createdAt)}",
+                      style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black26,
+                          fontWeight: FontWeight.w100),
+                    ),
+                  ),
+                  if (!roomModel.createdAt
+                      .isAtSameMomentAs(roomModel.updatedAt)) ...[
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "Actualizada: ${Utils.formatDate(roomModel.updatedAt)}",
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black26,
+                            fontWeight: FontWeight.w100),
+                      ),
+                    )
+                  ]
+                ],
+              ),
             ),
             const Spacer(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextButton(
-                    onPressed: () {
-                      dialogShow(context, size, pageProvider);
-                    },
-                    child: const Text("Cambiar nombre")),
-                TextButton(
-                    onPressed: () {
-                      context.go("/${roomModel.id}/participants");
-                    },
-                    child: const Text("Ver participantes")),
-                TextButton(
-                    onPressed: () async {
-                      await _roomConnection.deleteRoom(roomModel.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Sala eliminada')),
-                      );
-                      pageProvider.page = 1;
-                      context.go("/");
-                    },
-                    child: const Text("Eliminar sala")),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: TextButton(
+                      onPressed: () {
+                        dialogShow(context, size, pageProvider);
+                      },
+                      child: const Text("Cambiar nombre")),
+                ),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: TextButton(
+                      onPressed: () {
+                        context.go("/${roomModel.id}/participants");
+                      },
+                      child: const Text("Ver participantes")),
+                ),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: TextButton(
+                      onPressed: () async {
+                        await _roomConnection.deleteRoom(roomModel.id);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Sala eliminada')),
+                        );
+                        pageProvider.page = 1;
+                        context.go("/");
+                      },
+                      child: const Text("Eliminar sala")),
+                ),
               ],
             )
           ],
